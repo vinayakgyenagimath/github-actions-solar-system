@@ -34,7 +34,10 @@ jobs:
           run: npm install
     
         - name: Unit Testing
-          run: npm test
+          run: |
+               npm test
+               echo "${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}"
+          
           
         - name: Archive Test Result
           if: always()
