@@ -69,6 +69,7 @@ jobs:
           run: npm install
     
         - name: Code coverage
+          if: always()
           run: npm run coverage
 
       
