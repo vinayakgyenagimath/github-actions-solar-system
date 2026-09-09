@@ -74,6 +74,9 @@ jobs:
     docker:
       name: docker1
       runs-on: ubuntu-latest
+      permissions: 
+        contents: read
+        packages: write
       needs: [unit-testing , code-coverage]
       steps:
       - uses: actions/checkout@v4
