@@ -93,6 +93,8 @@ jobs:
     
     dev-deploy:
        name: dev-deployment
+       environment:
+        name: development
        runs-on: ubuntu-latest
        needs: docker
        steps:
