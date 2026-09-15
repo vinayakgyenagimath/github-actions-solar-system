@@ -2,7 +2,7 @@ name: Testing - Reusable Workflow
 on:
   workflow_call:
     inputs:
-      ingress_url:
+      ingress-url:
           description: Provide the Ingress URL
           required: true
           type: string
