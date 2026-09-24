@@ -58,3 +58,9 @@ jobs:
              aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
              aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
              aws-region: "us-east-1"
+        - name: Upload Test Result to S3
+          if: always()
+          continue-on-error: true     # same reasoning — don't fail the whole job on this yet
+          run: |
+            aws s3 cp test-results.xml \
+              "s3://${{ env.S3_BUCKET }}/unit-tests/node${{ matrix.node-version }}/${{ github.run_id }}/test-results.xml"
