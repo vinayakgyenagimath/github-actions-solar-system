@@ -1,66 +1,32 @@
-name: Solar System Workflow
-
-on: 
-  workflow_dispatch:
+name: soloar-system
+on:
   push:
     branches:
       - main
-      - 'feature/*'
-   
-env:
-  MONGO_URI: 'mongodb+srv://supercluster.d83jj.mongodb.net/superData'
-  MONGO_USERNAME: superuser
-  MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
-  AWS_REGION: us-east-1
-  S3_BUCKET: ${{ secrets.ARTIFACTS_BUCKET }}
-  
+  workflow_dispatch:
 
 jobs:
-    unit-testing:
-        name: Unit Testing12
-        runs-on: ubuntu-latest
-        steps:
-        - name: Checkout Repository
-          uses: actions/checkout@v4
+  unit-testing:
+    name: Unit Testing
+    runs-on: ubuntu-latest
 
-        - name: Setup NodeJS Version
-          uses: actions/setup-node@v4
-          with:
-            node-version: 20
-            
-        - name: Cache NPM dependencies
-          uses: actions/cache@v4
-          with:
-            path: ~/.npm
-            key: "${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}"
-  
-        - name: Install Dependencies
-          run: npm install
-    
-        - name: Unit Testing
-          run: |
-               npm test
-               echo "${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}"
-          
-          
-        - name: Archive Test Result
-          uses: actions/upload-artifact@v4
-          with:
-            name: Mocha-Test-Result
-            path: test-results.xml
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-        - name: Configure AWS Credentials
-          if: always()
-          continue-on-error: true     # don't block the job while we're still sorting out playground credentials
-          uses: aws-actions/configure-aws-credentials@v4
-          with:
-             aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-             aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-             aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-             aws-region: "us-east-1"
-        - name: Upload Test Result to S3
-          if: always()
-          continue-on-error: true     # same reasoning — don't fail the whole job on this yet
-          run: |
-            aws s3 cp test-results.xml \
-              "s3://${{ env.S3_BUCKET }}/unit-tests/node${{ matrix.node-version }}/${{ github.run_id }}/test-results.xml"
+      - name: Set up Nodejs 
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Cache npm dependicies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm test
